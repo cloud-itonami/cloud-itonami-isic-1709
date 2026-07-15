@@ -1,0 +1,40 @@
+{:itonami.blueprint/id "cloud-itonami-isic-1709"
+ :itonami.blueprint/name "Manufacture of other articles of paper and paperboard"
+ :itonami.blueprint/isic-rev5 "1709"
+ :itonami.blueprint/domain :paper-articles/plant-operations
+ :itonami.blueprint/license "AGPL-3.0-or-later"
+ :itonami.blueprint/social-impact [:worker-safety :environmental-stewardship :resource-efficiency]
+ :itonami.blueprint/governor :paper-articles-plant-operations-governor
+ :itonami.blueprint/robotics true
+ :itonami.blueprint/required-technologies [:robotics :identity :forms :dmn :bpmn :audit-ledger :cae]
+ :itonami.blueprint/status :public-oss
+ :itonami.blueprint/maturity :implemented
+ :itonami.blueprint/implemented-slice
+ "PaperArticlesAdvisor ⊣ Paper Articles Plant Operations Governor,
+ langgraph-clj StateGraph, append-only audit ledger. A plant
+ OPERATIONS COORDINATION actor for ISIC 1709's residual 'other paper
+ and paperboard articles' category -- chosen concrete illustration:
+ molded-pulp/paperboard paper-tableware manufacturing (paper
+ plates/bowls/trays, coated and uncoated paper cups), formed on a
+ pulp-molding press and finished on a die-cutting/folding line; the
+ same actor shape covers this category's other n.e.c. product lines
+ (filter paper, wallpaper base stock) since the coordination surface
+ -- batch logging, converting-line-equipment maintenance scheduling,
+ safety-concern flagging, shipment coordination -- does not vary by
+ which paper article is being formed. NOT direct pulp-molding-press/
+ die-cutter/converting-line-equipment control authority. Four ops
+ (`:log-production-batch` / `:schedule-maintenance` /
+ `:flag-safety-concern` / `:coordinate-shipment`), all `:effect
+ :propose` only. Ten concrete governor checks elaborate this
+ blueprint's HARD invariants: propose-only effect, closed op
+ allowlist, closed proposal-effect allowlist (any proposal touching
+ converting-line-equipment control is a hard, permanent block),
+ independent equipment verification/registration before maintenance
+ scheduling, independent batch verification/registration before
+ shipment coordination, independent shipment-quantity recompute
+ against the batch's own logged quantity, double-schedule guard,
+ product-grade validation, and basis-weight/moisture-content
+ plausibility validation. Safety-concern flagging (equipment hazard /
+ quality defect) ALWAYS escalates to a human plant supervisor;
+ `:log-production-batch` is the only op eligible to auto-commit, and
+ only at phase 3 when governor-clean."}
