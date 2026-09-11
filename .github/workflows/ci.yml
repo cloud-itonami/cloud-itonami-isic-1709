@@ -1,7 +1,7 @@
 name: ci
 
 # Kept correct and ready for when Actions are enabled on the org.
-# Until then: run locally with `clojure -M:lint` and `clojure -M:dev:test`.
+# Until then: run locally with `kbb -M:lint` and `kbb -M:dev:test`.
 #
 # Workspace layout: deps use :local/root to kotoba-lang/langgraph and
 # kotoba-lang/langchain (public). CI reconstructs sibling paths.
@@ -22,7 +22,7 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@13.0
         with: { cli: latest }
       - name: clj-kondo (errors fail the build)
-        run: clojure -M:lint
+        run: kbb -M:lint
 
   test:
     runs-on: ubuntu-latest
@@ -43,4 +43,4 @@ jobs:
         with: { cli: latest }
       - name: test (operation · governor · phase · registry · store parity)
         working-directory: orgs/cloud-itonami/cloud-itonami-isic-1709
-        run: clojure -M:dev:test
+        run: kbb -M:dev:test
