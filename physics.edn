@@ -1,0 +1,32 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README has no "Robotics premise" section. This build's concrete product
+;; line is molded-pulp / paperboard paper tableware. Its physical work here:
+;; pumping pulp slurry to the forming tank, and hot-pressing a wet formed
+;; plate in heated moulds.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-1709"
+ :cases
+ [{:id :plate-hot-press
+   :kind :thermal
+   :procedure "a wet vacuum-formed pulp plate is pressed between heated mould halves until its middle reaches 100 C (latent heat of the water is not modelled); swept :thickness-m is HALF the thickness (heated face to mid-plane), mid-plane adiabatic by symmetry, so the back face is the middle"
+   :params {:conductivity-w-mk 0.30 :density-kg-m3 1000.0 :specific-heat-j-kgk 3500.0
+            :t0-c 30.0 :t-hot-c 190.0 :h-front-w-m2k 800.0 :t-back-ambient-c 30.0 :h-back-w-m2k 0.0
+            :threshold-c 100.0 :duration-s 120.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.0005 0.00075 0.001 0.0015 0.002]}
+   :quantity :time-to-threshold-s
+   :limit {:max 20.0 :basis "estimate: 20 s hot-press stage in the plate forming cycle"}
+   :boundary {:lo 0.0002 :hi 0.005}}
+  {:id :slurry-to-forming-tank
+   :kind :pipe-flow
+   :procedure "stock pump sends dilute pulp slurry (treated as water) from the stock chest to the forming tank"
+   :params {:diameter-m 0.08 :length-m 25.0 :roughness-m 1.5e-6
+            :density-kg-m3 1000.0 :viscosity-pa-s 1.0e-3 :pump-efficiency 0.6 :elevation-m 3.0}
+   :sweep {:param :q-m3s :values [0.004 0.008 0.012 0.016 0.020]}
+   :quantity :pressure-drop-pa
+   :limit {:max 1.5e5 :basis "estimate: 1.5 bar differential head of the stock pump at its duty point"}
+   :boundary {:lo 0.001 :hi 0.05}}]}
